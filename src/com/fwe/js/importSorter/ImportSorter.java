@@ -40,7 +40,7 @@ class ImportSorter {
         String combinedLine = "";
 
         for (String line : lines) {
-            combinedLine += line;
+            combinedLine += line + "\n"; // Put the newline back on for position calculation
             if (combinedLine.trim().length() > 0) {
                 ImportLineParser importLineParser = new ImportLineParser(combinedLine.trim());
                 if (importLineParser.isImportLine()) {
@@ -49,7 +49,7 @@ class ImportSorter {
                         haveFoundFirstImport = true;
                     }
 
-                    end = currentPos + combinedLine.length() + 1;
+                    end = currentPos + combinedLine.length();
 
                     addToCorrectList(importLineParser);
                 } else if(combinedLine.startsWith("import")) {
@@ -59,7 +59,7 @@ class ImportSorter {
                 }
             }
 
-            currentPos += combinedLine.length() + 1; // Plus 1 of the \n we split on.
+            currentPos += combinedLine.length();
             combinedLine = "";
         }
 
