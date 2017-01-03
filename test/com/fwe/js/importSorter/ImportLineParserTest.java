@@ -141,6 +141,16 @@ public class ImportLineParserTest {
     }
 
     @Test
+    public void testImportWithSideffects() {
+        ImportLineParser line = new ImportLineParser("import 'chai-as-promised';");
+        assertTrue(line.isImportLine());
+        assertFalse(line.hasDefaultMember());
+        assertEquals(line.getModule(), "chai-as-promised");
+        assertTrue(line.isNodeModule());
+        assertEquals("import 'chai-as-promised';", line.toString());
+    }
+
+    @Test
     public void testComparator() {
         ImportLineParser line1 = new ImportLineParser("import React, { Component, PropTypes } from 'react';");
         ImportLineParser line2 = new ImportLineParser("import RaisedButton from 'material-ui/RaisedButton';");

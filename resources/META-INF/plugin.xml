@@ -7,11 +7,12 @@
   <description><![CDATA[
       Sorts the ES6 style imports according to the following order...<br>
       <ol>
-      <li>React</li>
-      <li>Node Modules with defaults (alphabetical by module)</li>
-      <li>Node Modules without defaults (alphabetical by module)</li>
-      <li>Custom Modules with defaults (alphabetical by module)</li>
-      <li>Custom Modules without defaults (alphabetical by module)</li>
+        <li>React</li>
+        <li>Node Modules with defaults (alphabetical by module)</li>
+        <li>Node Modules without defaults (alphabetical by module)</li>
+        <li>Custom Modules with defaults (alphabetical by module)</li>
+        <li>Custom Modules without defaults (alphabetical by module)</li>
+        <li>Entire Modules with side-effects</li>
       </ol>
     ]]></description>
 

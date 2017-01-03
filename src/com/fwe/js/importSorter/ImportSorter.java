@@ -9,6 +9,7 @@ class ImportSorter {
     private List<ImportLineParser> nodeModuleWithoutDefaultList;
     private List<ImportLineParser> customModuleWithDefaultsList;
     private List<ImportLineParser> customModuleWithoutDefaultsList;
+    private List<ImportLineParser> sideEffectModules;
 
     ImportSorterResult tryParse(String text) {
         if (text == null || text.length() == 0) {
@@ -20,6 +21,7 @@ class ImportSorter {
         nodeModuleWithoutDefaultList = new ArrayList<>();
         customModuleWithDefaultsList = new ArrayList<>();
         customModuleWithoutDefaultsList = new ArrayList<>();
+        sideEffectModules = new ArrayList<>();
 
         return getResult(text);
     }
@@ -72,6 +74,11 @@ class ImportSorter {
             return;
         }
 
+        if (!importLineParser.hasMember()) {
+            sideEffectModules.add(importLineParser);
+            return;
+        }
+
         if (importLineParser.isNodeModule()) {
             if (importLineParser.hasDefaultMember()) {
                 nodeModuleWithDefaultList.add(importLineParser);
@@ -92,6 +99,7 @@ class ImportSorter {
         nodeModuleWithoutDefaultList.sort(ImportLineParser.ModuleComparator);
         customModuleWithDefaultsList.sort(ImportLineParser.ModuleComparator);
         customModuleWithoutDefaultsList.sort(ImportLineParser.ModuleComparator);
+        sideEffectModules.sort(ImportLineParser.ModuleComparator);
     }
 
     private String getReplacementText() {
@@ -114,6 +122,10 @@ class ImportSorter {
         }
 
         for (ImportLineParser line : customModuleWithoutDefaultsList) {
+            replacementText += line + "\n";
+        }
+
+        for (ImportLineParser line : sideEffectModules) {
             replacementText += line + "\n";
         }
 

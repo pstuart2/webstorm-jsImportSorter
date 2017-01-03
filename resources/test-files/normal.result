@@ -8,4 +8,5 @@ import controls from '../../controls';
 import user from '../user';
 import t from './actionTypes';
 import * as api from './api';
+import 'sinon-as-promised';
 

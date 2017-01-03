@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 import controls from '../../controls';
 import RaisedButton from 'material-ui/RaisedButton';
+import 'sinon-as-promised';
 import FontIcon from 'material-ui/FontIcon';
 import React, { PropTypes } from 'react';
 import { Field, reduxForm } from 'redux-form';
