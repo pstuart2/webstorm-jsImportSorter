@@ -44,7 +44,7 @@ public class ImportSorterTest {
 
         ImportSorterResult result = sorter.tryParse(fileText);
         assertEquals(0, result.getStart());
-        assertEquals(263, result.getEnd());
+        assertEquals(359, result.getEnd());
         assertEquals(expectedReplacementText, result.getReplacement());
     }
 }

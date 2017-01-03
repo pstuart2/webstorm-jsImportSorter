@@ -1,7 +1,8 @@
 import React, { PropTypes } from 'react';
 import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
-import { Field, reduxForm } from 'redux-form';
+import { Card, CardActions, CardHeader, CardMedia, CardText, CardTitle } from 'material-ui/Card';
 import { Link } from 'react-router';
+import { Field, reduxForm } from 'redux-form';
 import controls from '../../controls';
 

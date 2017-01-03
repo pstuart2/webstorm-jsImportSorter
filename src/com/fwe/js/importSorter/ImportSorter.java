@@ -12,16 +12,16 @@ package com.fwe.js.importSorter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImportSorter {
+class ImportSorter {
     private final static String IMPORTS_REGEX = "import [\\w\\W][^\\n]{0,};?";
 
-    private ImportLine reactLine;
-    private List<ImportLine> nodeModuleWithDefaultList;
-    private List<ImportLine> nodeModuleWithoutDefaultList;
-    private List<ImportLine> customModuleWithDefaultsList;
-    private List<ImportLine> customModuleWithoutDefaultsList;
+    private ImportLineParser reactLine;
+    private List<ImportLineParser> nodeModuleWithDefaultList;
+    private List<ImportLineParser> nodeModuleWithoutDefaultList;
+    private List<ImportLineParser> customModuleWithDefaultsList;
+    private List<ImportLineParser> customModuleWithoutDefaultsList;
 
-    public ImportSorterResult tryParse(String text) {
+    ImportSorterResult tryParse(String text) {
         if (text == null || text.length() == 0) {
             return null;
         }
@@ -49,8 +49,8 @@ public class ImportSorter {
         for (String line : lines) {
             String cleanLine = line.trim();
             if (cleanLine.length() > 0) {
-                ImportLine importLine = new ImportLine(cleanLine);
-                if (importLine.isImportLine()) {
+                ImportLineParser importLineParser = new ImportLineParser(cleanLine);
+                if (importLineParser.isImportLine()) {
                     if (!haveFoundFirstImport) {
                         start = currentPos;
                         haveFoundFirstImport = true;
@@ -58,7 +58,7 @@ public class ImportSorter {
 
                     end = currentPos + line.length() + 1;
 
-                    addToCorrectList(importLine);
+                    addToCorrectList(importLineParser);
                 } else if (haveFoundFirstImport) {
                     break;
                 }
@@ -67,6 +67,7 @@ public class ImportSorter {
             currentPos += line.length() + 1; // Plus 1 of the \n we split on.
         }
 
+        sortLists();
         String replacementText = getReplacementText();
 
         return new ImportSorterResult(start, end, replacementText);
@@ -76,48 +77,55 @@ public class ImportSorter {
         return text.split("\n");
     }
 
-    private void addToCorrectList(ImportLine importLine) {
-        if(importLine.hasDefaultMember() && importLine.getDefaultMember().equals("React")) {
-            reactLine = importLine;
+    private void addToCorrectList(ImportLineParser importLineParser) {
+        if (importLineParser.hasDefaultMember() && importLineParser.getDefaultMember().equals("React")) {
+            reactLine = importLineParser;
             return;
         }
 
-        if(importLine.isNodeModule()) {
-            if(importLine.hasDefaultMember()) {
-                nodeModuleWithDefaultList.add(importLine);
+        if (importLineParser.isNodeModule()) {
+            if (importLineParser.hasDefaultMember()) {
+                nodeModuleWithDefaultList.add(importLineParser);
             } else {
-                nodeModuleWithoutDefaultList.add(importLine);
+                nodeModuleWithoutDefaultList.add(importLineParser);
             }
         } else {
-            if(importLine.hasDefaultMember()) {
-                customModuleWithDefaultsList.add(importLine);
+            if (importLineParser.hasDefaultMember()) {
+                customModuleWithDefaultsList.add(importLineParser);
             } else {
-                customModuleWithoutDefaultsList.add(importLine);
+                customModuleWithoutDefaultsList.add(importLineParser);
             }
         }
+    }
+
+    private void sortLists() {
+        nodeModuleWithDefaultList.sort(ImportLineParser.ModuleComparator);
+        nodeModuleWithoutDefaultList.sort(ImportLineParser.ModuleComparator);
+        customModuleWithDefaultsList.sort(ImportLineParser.ModuleComparator);
+        customModuleWithoutDefaultsList.sort(ImportLineParser.ModuleComparator);
     }
 
     private String getReplacementText() {
         String replacementText = "";
 
-        if(reactLine != null) {
-            replacementText = reactLine.getLine() + "\n";
+        if (reactLine != null) {
+            replacementText = reactLine + "\n";
         }
 
-        for(ImportLine line : nodeModuleWithDefaultList) {
-            replacementText += line.getLine() + "\n";
+        for (ImportLineParser line : nodeModuleWithDefaultList) {
+            replacementText += line + "\n";
         }
 
-        for(ImportLine line : nodeModuleWithoutDefaultList) {
-            replacementText += line.getLine() + "\n";
+        for (ImportLineParser line : nodeModuleWithoutDefaultList) {
+            replacementText += line + "\n";
         }
 
-        for(ImportLine line : customModuleWithDefaultsList) {
-            replacementText += line.getLine() + "\n";
+        for (ImportLineParser line : customModuleWithDefaultsList) {
+            replacementText += line + "\n";
         }
 
-        for(ImportLine line : customModuleWithoutDefaultsList) {
-            replacementText += line.getLine() + "\n";
+        for (ImportLineParser line : customModuleWithoutDefaultsList) {
+            replacementText += line + "\n";
         }
 
         return replacementText;

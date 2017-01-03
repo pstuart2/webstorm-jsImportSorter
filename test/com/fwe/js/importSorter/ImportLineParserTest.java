@@ -2,41 +2,47 @@ package com.fwe.js.importSorter;
 
 import org.junit.Test;
 
+import java.util.Collections;
+import java.util.List;
+
+import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 
-public class ImportLineTest {
+public class ImportLineParserTest {
 
     @Test
     public void testNonImportLine() {
-        ImportLine line = new ImportLine("const carrot = 4");
+        ImportLineParser line = new ImportLineParser("const carrot = 4");
         assertFalse(line.isImportLine());
     }
 
     @Test
     public void testImportLineWithDefaultMember() {
-        ImportLine line = new ImportLine("import sinon from 'sinon';");
+        ImportLineParser line = new ImportLineParser("import sinon from 'sinon';");
         assertTrue(line.isImportLine());
         assertTrue(line.hasDefaultMember());
         assertEquals(line.getModule(), "sinon");
         assertEquals(line.getDefaultMember(), "sinon");
         assertTrue(line.isNodeModule());
         assertNull(line.getMembers());
+        assertEquals("import sinon from 'sinon';", line.toString());
     }
 
     @Test
     public void testImportLineWithoutDefaultMember() {
-        ImportLine line = new ImportLine("import { Link } from 'react-router';");
+        ImportLineParser line = new ImportLineParser("import { Link } from 'react-router';");
         assertTrue(line.isImportLine());
         assertFalse(line.hasDefaultMember());
         assertEquals(line.getModule(), "react-router");
         assertTrue(line.isNodeModule());
         assertEquals(line.getMembers().length, 1);
         assertEquals(line.getMembers()[0], "Link");
+        assertEquals("import { Link } from 'react-router';", line.toString());
     }
 
     @Test
     public void testImportLineWithMultipleMembers() {
-        ImportLine line = new ImportLine("import { Field, reduxForm } from 'redux-form';");
+        ImportLineParser line = new ImportLineParser("import { Field, reduxForm } from 'redux-form';");
         assertTrue(line.isImportLine());
         assertFalse(line.hasDefaultMember());
         assertEquals(line.getModule(), "redux-form");
@@ -48,7 +54,7 @@ public class ImportLineTest {
 
     @Test
     public void testImportLineWithDefaultMemberMultipleMembers() {
-        ImportLine line = new ImportLine("import React, { Component, PropTypes } from 'react';");
+        ImportLineParser line = new ImportLineParser("import React, { Component, PropTypes } from 'react';");
         assertTrue(line.isImportLine());
         assertTrue(line.hasDefaultMember());
         assertEquals(line.getDefaultMember(), "React");
@@ -57,11 +63,12 @@ public class ImportLineTest {
         assertEquals(line.getMembers().length, 2);
         assertEquals(line.getMembers()[0], "Component");
         assertEquals(line.getMembers()[1], "PropTypes");
+        assertEquals("import React, { Component, PropTypes } from 'react';", line.toString());
     }
 
     @Test
     public void testImportLineWithLocalModule() {
-        ImportLine line = new ImportLine("import controls from '../../controls';");
+        ImportLineParser line = new ImportLineParser("import controls from '../../controls';");
         assertTrue(line.isImportLine());
         assertTrue(line.hasDefaultMember());
         assertEquals(line.getDefaultMember(), "controls");
@@ -71,7 +78,7 @@ public class ImportLineTest {
 
     @Test
     public void testImportLineWithLocalModule2() {
-        ImportLine line = new ImportLine("import controls from '/home/user/workspace/controls';");
+        ImportLineParser line = new ImportLineParser("import controls from '/home/user/workspace/controls';");
         assertTrue(line.isImportLine());
         assertTrue(line.hasDefaultMember());
         assertEquals(line.getDefaultMember(), "controls");
@@ -81,7 +88,21 @@ public class ImportLineTest {
 
     @Test
     public void testImportLineWithDoubleQuotesNoSpaces() {
-        ImportLine line = new ImportLine("import React,{Component,PropTypes} from \"react\";");
+        ImportLineParser line = new ImportLineParser("import React,{PropTypes,Component} from \"react\";");
+        assertTrue(line.isImportLine());
+        assertTrue(line.hasDefaultMember());
+        assertEquals(line.getDefaultMember(), "React");
+        assertEquals(line.getModule(), "react");
+        assertTrue(line.isNodeModule());
+        assertEquals(line.getMembers().length, 2);
+        assertEquals(line.getMembers()[0], "Component");
+        assertEquals(line.getMembers()[1], "PropTypes");
+        assertEquals("import React, { Component, PropTypes } from 'react';", line.toString());
+    }
+
+    @Test
+    public void testImportLineWithExtraWhiteSpace() {
+        ImportLineParser line = new ImportLineParser("import   React  ,  {  Component  ,  PropTypes    }   from   'react'");
         assertTrue(line.isImportLine());
         assertTrue(line.hasDefaultMember());
         assertEquals(line.getDefaultMember(), "React");
@@ -93,16 +114,35 @@ public class ImportLineTest {
     }
 
     @Test
-    public void testImportLineWithExtraWhiteSpace() {
-        ImportLine line = new ImportLine("import   React  ,  {  Component  ,  PropTypes    }   from   'react'");
+    public void testImportLineSortingMembers() {
+        ImportLineParser line = new ImportLineParser("import {CardHeader, CardMedia, CardTitle, CardActions, Card, CardText} from 'material-ui/Card';");
         assertTrue(line.isImportLine());
-        assertTrue(line.hasDefaultMember());
-        assertEquals(line.getDefaultMember(), "React");
-        assertEquals(line.getModule(), "react");
+        assertFalse(line.hasDefaultMember());
+        assertEquals(line.getModule(), "material-ui/Card");
         assertTrue(line.isNodeModule());
-        assertEquals(line.getMembers().length, 2);
-        assertEquals(line.getMembers()[0], "Component");
-        assertEquals(line.getMembers()[1], "PropTypes");
+        assertEquals(line.getMembers().length, 6);
+        assertEquals(line.getMembers()[0], "Card");
+        assertEquals(line.getMembers()[1], "CardActions");
+        assertEquals(line.getMembers()[2], "CardHeader");
+        assertEquals(line.getMembers()[3], "CardMedia");
+        assertEquals(line.getMembers()[4], "CardText");
+        assertEquals(line.getMembers()[5], "CardTitle");
+        assertEquals("import { Card, CardActions, CardHeader, CardMedia, CardText, CardTitle } from 'material-ui/Card';", line.toString());
     }
 
+    @Test
+    public void testComparator() {
+        ImportLineParser line1 = new ImportLineParser("import React, { Component, PropTypes } from 'react';");
+        ImportLineParser line2 = new ImportLineParser("import RaisedButton from 'material-ui/RaisedButton';");
+        ImportLineParser line3 = new ImportLineParser("import FontIcon from 'material-ui/FontIcon';");
+        ImportLineParser line4 = new ImportLineParser("import {CardHeader, CardMedia, CardTitle, CardActions, Card, CardText} from 'material-ui/Card';");
+
+        List<ImportLineParser> list = asList(line1, line2, line3, line4);
+        list.sort(ImportLineParser.ModuleComparator);
+
+        assertEquals("material-ui/Card", list.get(0).getModule());
+        assertEquals("material-ui/FontIcon", list.get(1).getModule());
+        assertEquals("material-ui/RaisedButton", list.get(2).getModule());
+        assertEquals("react", list.get(3).getModule());
+    }
 }
