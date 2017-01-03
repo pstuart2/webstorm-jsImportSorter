@@ -24,6 +24,7 @@ public class ImportLineParser {
     private String module;
     private boolean hasDefaultMember;
     private boolean isNodeModule;
+    private boolean isMultiLineMembers;
 
     public ImportLineParser(String line) {
         parseLine(line);
@@ -72,9 +73,15 @@ public class ImportLineParser {
                     result += ", ";
                 }
 
-                result += "{ ";
-                result += String.join(", ", members);
-                result += " }";
+                if(isMultiLineMembers) {
+                    result += "{\n\t";
+                    result += String.join(",\n\t", members);
+                    result += "\n}";
+                } else {
+                    result += "{ ";
+                    result += String.join(", ", members);
+                    result += " }";
+                }
             }
         }
 
@@ -118,6 +125,8 @@ public class ImportLineParser {
         if (members == null) {
             return null;
         }
+
+        isMultiLineMembers = members.trim().contains("\n");
 
         return members.replace("{", "").replace("}", "").trim().replaceAll("\\s", "").split(",");
     }

@@ -151,7 +151,14 @@ public class ImportLineParserTest {
         assertEquals(line.getMembers()[3], "CardMedia");
         assertEquals(line.getMembers()[4], "CardText");
         assertEquals(line.getMembers()[5], "CardTitle");
-        assertEquals("import { Card, CardActions, CardHeader, CardMedia, CardText, CardTitle } from 'material-ui/Card';", line.toString());
+        assertEquals("import {\n" +
+                "\tCard,\n" +
+                "\tCardActions,\n" +
+                "\tCardHeader,\n" +
+                "\tCardMedia,\n" +
+                "\tCardText,\n" +
+                "\tCardTitle\n" +
+                "} from 'material-ui/Card';", line.toString());
     }
 
     @Test
