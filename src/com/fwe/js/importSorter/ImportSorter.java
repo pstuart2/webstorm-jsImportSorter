@@ -37,25 +37,30 @@ class ImportSorter {
         int start = 0;
         int end = 0;
 
+        String combinedLine = "";
+
         for (String line : lines) {
-            String cleanLine = line.trim();
-            if (cleanLine.length() > 0) {
-                ImportLineParser importLineParser = new ImportLineParser(cleanLine);
+            combinedLine += line;
+            if (combinedLine.trim().length() > 0) {
+                ImportLineParser importLineParser = new ImportLineParser(combinedLine.trim());
                 if (importLineParser.isImportLine()) {
                     if (!haveFoundFirstImport) {
                         start = currentPos;
                         haveFoundFirstImport = true;
                     }
 
-                    end = currentPos + line.length() + 1;
+                    end = currentPos + combinedLine.length() + 1;
 
                     addToCorrectList(importLineParser);
+                } else if(combinedLine.startsWith("import")) {
+                    continue;
                 } else if (haveFoundFirstImport) {
                     break;
                 }
             }
 
-            currentPos += line.length() + 1; // Plus 1 of the \n we split on.
+            currentPos += combinedLine.length() + 1; // Plus 1 of the \n we split on.
+            combinedLine = "";
         }
 
         sortLists();

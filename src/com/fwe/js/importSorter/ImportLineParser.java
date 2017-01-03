@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ImportLineParser {
-    private final static String IMPORT_REGEX = "^import\\s*(?<defMember>[-\\w]+){0,}\\s*(\\* as (?<member>[-\\w]+)){0,1},?\\s*(\\{\\s*(?<members>.*)\\})?[\\s*from\\s*]*('|\")(?<module>[\\.\\/\\-a-zA-Z0-9]+)('|\");?$";
+    private final static String IMPORT_REGEX = "^import\\s*(?<defMember>[-\\w]+){0,}\\s*(\\* as (?<member>[-\\w]+)){0,1},?\\s*((?<members>\\{[\\w\\s\\,]{0,}\\}))?[\\s*from\\s*]*('|\")(?<module>[\\.\\/\\-a-zA-Z0-9]+)('|\");?$";
     public static Comparator<ImportLineParser> ModuleComparator = new Comparator<ImportLineParser>() {
 
         public int compare(ImportLineParser line1, ImportLineParser line2) {
@@ -22,12 +22,11 @@ public class ImportLineParser {
     private String allAsMember;
     private String[] members;
     private String module;
-    private boolean isImportLine;
     private boolean hasDefaultMember;
     private boolean isNodeModule;
 
     public ImportLineParser(String line) {
-        isImportLine = parseLine(line);
+        parseLine(line);
     }
 
     public String getDefaultMember() {
@@ -39,7 +38,7 @@ public class ImportLineParser {
     }
 
     public boolean isImportLine() {
-        return isImportLine;
+        return module != null;
     }
 
     public boolean hasDefaultMember() {
@@ -61,7 +60,7 @@ public class ImportLineParser {
     @Override
     public String toString() {
         String result = "import ";
-        if(allAsMember != null) {
+        if (allAsMember != null) {
             result += "* as " + allAsMember;
         } else {
             if (hasDefaultMember()) {
@@ -79,7 +78,7 @@ public class ImportLineParser {
             }
         }
 
-        if(hasMember()) {
+        if (hasMember()) {
             result += " from '" + module + "';";
         } else {
             result += "'" + module + "';";
@@ -88,13 +87,10 @@ public class ImportLineParser {
         return result;
     }
 
-    private boolean parseLine(String line) {
+    private void parseLine(String line) {
         if (line.startsWith("import")) {
             populate(line);
-            return true;
         }
-
-        return false;
     }
 
     private void populate(String line) {
@@ -123,6 +119,6 @@ public class ImportLineParser {
             return null;
         }
 
-        return members.trim().replace(" ", "").split(",");
+        return members.replace("{", "").replace("}", "").trim().replaceAll("\\s", "").split(",");
     }
 }

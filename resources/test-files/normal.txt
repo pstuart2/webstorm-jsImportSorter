@@ -1,4 +1,12 @@
 import { Link } from 'react-router';
+import {
+    CardHeader,
+    CardMedia,
+    CardTitle,
+    CardActions,
+    Card,
+    CardText
+} from 'material-ui/Card';
 import controls from '../../controls';
 import RaisedButton from 'material-ui/RaisedButton';
 import 'sinon-as-promised';
@@ -6,7 +14,6 @@ import FontIcon from 'material-ui/FontIcon';
 import React, { PropTypes } from 'react';
 import { Field, reduxForm } from 'redux-form';
 import * as api from './api';
-import {CardHeader, CardMedia, CardTitle, CardActions, Card, CardText} from 'material-ui/Card';
 import t from './actionTypes';
 import user from '../user';
 

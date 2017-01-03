@@ -131,6 +131,30 @@ public class ImportLineParserTest {
     }
 
     @Test
+    public void testImportLineMultiLineMembers() {
+        ImportLineParser line = new ImportLineParser("import {\n" +
+                "    CardHeader,\n" +
+                "    CardMedia,\n" +
+                "    CardTitle,\n" +
+                "    CardActions,\n" +
+                "    Card,\n" +
+                "    CardText\n" +
+                "} from 'material-ui/Card';");
+        assertTrue(line.isImportLine());
+        assertFalse(line.hasDefaultMember());
+        assertEquals(line.getModule(), "material-ui/Card");
+        assertTrue(line.isNodeModule());
+        assertEquals(line.getMembers().length, 6);
+        assertEquals(line.getMembers()[0], "Card");
+        assertEquals(line.getMembers()[1], "CardActions");
+        assertEquals(line.getMembers()[2], "CardHeader");
+        assertEquals(line.getMembers()[3], "CardMedia");
+        assertEquals(line.getMembers()[4], "CardText");
+        assertEquals(line.getMembers()[5], "CardTitle");
+        assertEquals("import { Card, CardActions, CardHeader, CardMedia, CardText, CardTitle } from 'material-ui/Card';", line.toString());
+    }
+
+    @Test
     public void testImportAllAsName() {
         ImportLineParser line = new ImportLineParser("import * as API from './api';");
         assertTrue(line.isImportLine());
