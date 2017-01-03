@@ -4,7 +4,7 @@ import com.intellij.lang.Language;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -22,7 +22,7 @@ public class ImportSorterAction extends AnAction {
         String text = document.getText();
         ImportSorter sorter = new ImportSorter();
         ImportSorterResult sortResult = sorter.tryParse(text);
-        if(sortResult == null || sortResult.getReplacement().length() == 0) {
+        if (sortResult == null || sortResult.getReplacement().length() == 0) {
             return;
         }
 
@@ -42,7 +42,8 @@ public class ImportSorterAction extends AnAction {
         //Get required data keys
         final Project project = e.getData(CommonDataKeys.PROJECT);
         final Editor editor = e.getData(CommonDataKeys.EDITOR);
-        Language[] languages = e.getDataContext().getData(DataKeys.CONTEXT_LANGUAGES);
+        //PlatformDataKeys/LangDataKeys for non-Intellij
+        Language[] languages = e.getDataContext().getData(LangDataKeys.CONTEXT_LANGUAGES);
         boolean isValidLanguage = false;
 
         if (languages != null && languages.length > 0) {

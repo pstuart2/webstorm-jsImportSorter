@@ -1,17 +1,22 @@
 <idea-plugin version="2">
-  <id>com.your.company.unique.plugin.id</id>
-  <name>Plugin display name here</name>
+  <id>com.fwe.js.importSorter</id>
+  <name>Javascript Import Sorter</name>
   <version>1.0</version>
-  <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+  <vendor url="https://github.com/pstuart2">Paul Stuart</vendor>
 
   <description><![CDATA[
-      Enter short description for your plugin here.<br>
-      <em>most HTML tags may be used</em>
+      Sorts the ES6 style imports according to the following order...<br>
+      <ol>
+      <li>React</li>
+      <li>Node Modules with defaults (alphabetical by module)</li>
+      <li>Node Modules without defaults (alphabetical by module)</li>
+      <li>Custom Modules with defaults (alphabetical by module)</li>
+      <li>Custom Modules without defaults (alphabetical by module)</li>
+      </ol>
     ]]></description>
 
   <change-notes><![CDATA[
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>
+      Initial release
     ]]>
   </change-notes>
 
@@ -20,9 +25,7 @@
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
-  <!-- uncomment to enable plugin in all products
   <depends>com.intellij.modules.lang</depends>
-  -->
 
   <extensions defaultExtensionNs="com.intellij">
     <!-- Add your extensions here -->
@@ -30,8 +33,9 @@
 
   <actions>
     <!-- Add your actions here -->
-    <action id="jsImportSorter.sort" class="com.fwe.js.importSorter.ImportSorterAction" text="ES6 Import Sorter">
+    <action id="jsImportSorter.sort" class="com.fwe.js.importSorter.ImportSorterAction" text="Sort Imports">
       <add-to-group group-id="CodeFormatGroup" anchor="first"/>
+      <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl O"/>
     </action>
   </actions>
 

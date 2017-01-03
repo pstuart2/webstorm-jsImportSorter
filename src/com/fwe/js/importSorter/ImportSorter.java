@@ -1,20 +1,9 @@
 package com.fwe.js.importSorter;
 
-/*
-        1. React
-        2. Node Modules with defaults (alphabetical)
-        3. Node Modules without defaults (alphabetical)
-        4. Custom Modules with defaults
-        5. Custom Modules without defaults
-
- */
-
 import java.util.ArrayList;
 import java.util.List;
 
 class ImportSorter {
-    private final static String IMPORTS_REGEX = "import [\\w\\W][^\\n]{0,};?";
-
     private ImportLineParser reactLine;
     private List<ImportLineParser> nodeModuleWithDefaultList;
     private List<ImportLineParser> nodeModuleWithoutDefaultList;
