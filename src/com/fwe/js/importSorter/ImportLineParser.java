@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ImportLineParser {
-    private final static String IMPORT_REGEX = "^import\\s*(?<defMember>[-\\w\\.]+){0,}\\s*,?\\s*(\\{\\s*(?<members>.*)\\})?\\s*from\\s*('|\")(?<module>[\\.\\/\\-a-zA-Z0-9]+)('|\");?$";
+    private final static String IMPORT_REGEX = "^import\\s*(?<defMember>[-\\w\\.]+){0,}\\s*(\\* as (?<member>[-\\w\\.]+)){0,1},?\\s*(\\{\\s*(?<members>.*)\\})?\\s*from\\s*('|\")(?<module>[\\.\\/\\-a-zA-Z0-9]+)('|\");?$";
     public static Comparator<ImportLineParser> ModuleComparator = new Comparator<ImportLineParser>() {
 
         public int compare(ImportLineParser line1, ImportLineParser line2) {
@@ -19,6 +19,7 @@ public class ImportLineParser {
 
     };
     private String defaultMember;
+    private String allAsMember;
     private String[] members;
     private String module;
     private boolean isImportLine;
@@ -56,18 +57,22 @@ public class ImportLineParser {
     @Override
     public String toString() {
         String result = "import ";
-        if (hasDefaultMember()) {
-            result += defaultMember;
-        }
-
-        if (members != null) {
+        if(allAsMember != null) {
+            result += "* as " + allAsMember;
+        } else {
             if (hasDefaultMember()) {
-                result += ", ";
+                result += defaultMember;
             }
 
-            result += "{ ";
-            result += String.join(", ", members);
-            result += " }";
+            if (members != null) {
+                if (hasDefaultMember()) {
+                    result += ", ";
+                }
+
+                result += "{ ";
+                result += String.join(", ", members);
+                result += " }";
+            }
         }
 
         result += " from '" + module + "';";
@@ -97,6 +102,7 @@ public class ImportLineParser {
         hasDefaultMember = defaultMember != null;
         module = m.group("module");
         members = getMembers(m.group("members"));
+        allAsMember = m.group("member");
         isNodeModule = !module.startsWith(".") && !module.startsWith("/");
 
         if (members != null) {

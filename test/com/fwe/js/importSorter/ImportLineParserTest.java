@@ -131,6 +131,16 @@ public class ImportLineParserTest {
     }
 
     @Test
+    public void testImportAllAsName() {
+        ImportLineParser line = new ImportLineParser("import * as API from './api';");
+        assertTrue(line.isImportLine());
+        assertFalse(line.hasDefaultMember());
+        assertEquals(line.getModule(), "./api");
+        assertFalse(line.isNodeModule());
+        assertEquals("import * as API from './api';", line.toString());
+    }
+
+    @Test
     public void testComparator() {
         ImportLineParser line1 = new ImportLineParser("import React, { Component, PropTypes } from 'react';");
         ImportLineParser line2 = new ImportLineParser("import RaisedButton from 'material-ui/RaisedButton';");
