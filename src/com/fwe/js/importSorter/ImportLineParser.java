@@ -128,6 +128,11 @@ public class ImportLineParser {
 
         isMultiLineMembers = members.trim().contains("\n");
 
-        return members.replace("{", "").replace("}", "").trim().replaceAll("\\s", "").split(",");
+        String[] memberArray = members.replace("{", "").replace("}", "").trim().split(",");
+        for (int i = 0; i < memberArray.length; i++) {
+            memberArray[i] = memberArray[i].trim();
+        }
+
+        return memberArray;
     }
 }

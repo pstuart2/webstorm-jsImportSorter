@@ -53,6 +53,17 @@ public class ImportLineParserTest {
     }
 
     @Test
+    public void testImportLineWithAliasedMembers() {
+        ImportLineParser line = new ImportLineParser("import { reducer as formReducer } from 'redux-form';");
+        assertTrue(line.isImportLine());
+        assertFalse(line.hasDefaultMember());
+        assertEquals(line.getModule(), "redux-form");
+        assertTrue(line.isNodeModule());
+        assertEquals(line.getMembers().length, 1);
+        assertEquals("reducer as formReducer", line.getMembers()[0]);
+    }
+
+    @Test
     public void testImportLineWithDefaultMemberMultipleMembers() {
         ImportLineParser line = new ImportLineParser("import React, { Component, PropTypes } from 'react';");
         assertTrue(line.isImportLine());

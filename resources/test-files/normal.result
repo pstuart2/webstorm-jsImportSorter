@@ -10,6 +10,7 @@ import {
 	CardTitle
 } from 'material-ui/Card';
 import { Link } from 'react-router';
+import { reducer as formReducer } from 'redux-form';
 import { Field, reduxForm } from 'redux-form';
 import controls from '../../controls';
 import user from '../user';
